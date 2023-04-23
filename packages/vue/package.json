@@ -1,0 +1,25 @@
+{
+  "name": "yuuki-uploader-vue",
+  "version": "1.0.0",
+  "description": "vue3实现的大文件分片上传器",
+  "type": "module",
+  "main": "./dist/yuuki-uploader.js",
+  "types": "./dist/yuuki-uploader.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "vue",
+    "文件上传",
+    "upload",
+    "uploader"
+  ],
+  "author": "yuuki-yuuna",
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "3.2.47"
+  },
+  "dependencies": {
+    "@yuuki-uploader/core": "workspace:^"
+  }
+}

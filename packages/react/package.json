@@ -1,0 +1,16 @@
+{
+  "name": "yuuki-uploader-react",
+  "version": "1.0.0",
+  "description": "react实现的大文件分片上传器",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react",
+    "文件上传",
+    "upload",
+    "uploader"
+  ],
+  "author": "yuuki-yuuna",
+  "license": "MIT"
+}

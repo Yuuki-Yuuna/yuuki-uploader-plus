@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": true,
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": ["ESNext", "DOM"],
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "jsx": "preserve"
+  },
+  "include": ["packages", "play", "server"],
+  "exclude": ["node_modules", "*/**/dist"],
+  "references": [{ "path": "./tsconfig.vite.json" }]
+}
