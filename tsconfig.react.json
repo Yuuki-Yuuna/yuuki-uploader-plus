@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "jsx": "react-jsx",
+    "lib": ["ESNext", "DOM"],
+    "types": ["vite/client"]
+  },
+  "include": ["play/react"],
+  "exclude": ["node_modules"],
+  "references": [{ "path": "./tsconfig.vite.json" }]
+}

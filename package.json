@@ -4,6 +4,7 @@
   "packageManager": "pnpm@8.2.0",
   "scripts": {
     "dev:vue": "pnpm -C play/vue dev",
+    "dev:react": "pnpm -C play/react dev",
     "dev:server": "pnpm -C server dev",
     "build": "rollup -c",
     "build:type": "tsc -p tsconfig.type.json && rollup -c rollup.type.config.js",
@@ -16,6 +17,8 @@
     "@typescript-eslint/parser": "^5.59.0",
     "eslint": "^8.38.0",
     "prettier": "^2.8.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "rimraf": "^5.0.0",
     "rollup": "^3.20.6",
     "rollup-plugin-dts": "^5.3.0",

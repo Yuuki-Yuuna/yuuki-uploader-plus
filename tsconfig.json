@@ -1,19 +1,15 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "strict": true,
-    "removeComments": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "lib": ["ESNext", "DOM"],
-    "skipLibCheck": true,
-    "isolatedModules": true,
-    "jsx": "preserve"
+    "lib": ["ESNext", "DOM"]
   },
-  "include": ["packages", "play", "server"],
-  "exclude": ["node_modules", "*/**/dist"],
-  "references": [{ "path": "./tsconfig.vite.json" }]
+  "include": ["packages"],
+  "exclude": ["node_modules", "packages/**/dist"],
+  "references": [
+    { "path": "./tsconfig.vue.json" },
+    { "path": "./tsconfig.react.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
 }
