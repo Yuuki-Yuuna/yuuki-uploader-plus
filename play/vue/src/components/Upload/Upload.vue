@@ -3,6 +3,7 @@
     <h5>uploader</h5>
     <div class="upload-options">
       <el-button type="primary" round size="small" @click="uploadStart">Start</el-button>
+      <el-button type="info" round size="small" @click="uploadCancel">Cancel</el-button>
     </div>
     <div ref="uploadRef" class="upload-field">
       <el-icon :size="36"><upload-filled /></el-icon>
@@ -15,7 +16,7 @@
 import { UploadFilled } from '@element-plus/icons-vue'
 import { Uploader } from 'yuuki-uploader-vue'
 
-interface UploadProps {
+export interface UploadProps {
   uploader: Uploader
 }
 
@@ -25,6 +26,10 @@ const uploadRef = ref<HTMLElement>()
 
 const uploadStart = () => {
   props.uploader.uploadAll()
+}
+
+const uploadCancel = () => {
+  props.uploader.cancelAll()
 }
 
 onMounted(() => {
@@ -50,18 +55,14 @@ onBeforeUnmount(() => {
 
   &-options {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
     padding: 0 12px;
 
-    .switch {
-      display: flex;
-      align-items: center;
-      font-size: 8px;
-
-      .info {
-        margin-right: 4px;
-      }
+    .el-button {
+      width: 54px;
+      height: 28px;
     }
   }
 

@@ -1,18 +1,7 @@
 import { ComputedRef, Ref } from 'vue';
-import { UploadRawFile, Option } from '@yuuki-uploader/core';
+import { UploadFile, UploaderOption } from '@yuuki-uploader/core';
+export { UploadFile, UploadStatus } from '@yuuki-uploader/core';
 
-type UploadStatus = 'calculating' | 'waiting' | 'uploading' | 'compelete' | 'pause' | 'success' | 'fail';
-interface UploadFile {
-    uid: number;
-    name: string;
-    size: number;
-    type: string;
-    progress: number;
-    currentSpeed: number;
-    averageSpeed: number;
-    status: UploadStatus;
-    raw: UploadRawFile;
-}
 interface Uploader {
     uploadList: ComputedRef<UploadFile[]>;
     addFile: (rawFile: File) => Promise<void>;
@@ -30,7 +19,6 @@ interface Uploader {
     pauseAll: () => void;
     cancelAll: () => void;
 }
-type UploaderOption = Option<UploadFile>;
 declare const useUploader: (uploaderOption?: Partial<UploaderOption>) => Uploader;
 
-export { UploadFile, UploadStatus, Uploader, UploaderOption, useUploader };
+export { Uploader, useUploader };

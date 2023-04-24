@@ -2,9 +2,12 @@
   "name": "yuuki-uploader-react",
   "version": "1.0.0",
   "description": "react实现的大文件分片上传器",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "type": "module",
+  "main": "./dist/yuuki-uploader.js",
+  "types": "./dist/yuuki-uploader.d.ts",
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "react",
     "文件上传",
@@ -12,5 +15,11 @@
     "uploader"
   ],
   "author": "yuuki-yuuna",
-  "license": "MIT"
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^18.2.0"
+  },
+  "dependencies": {
+    "@yuuki-uploader/core": "workspace:^"
+  }
 }

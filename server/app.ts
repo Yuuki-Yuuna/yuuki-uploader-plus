@@ -73,7 +73,6 @@ app.post(
 app.post('/merge', upload.none(), (request: Request<{}, {}, MergeBody>, response: Response) => {
   const { filename, totalChunks, hash } = request.body
   const newFilename = conflictRename(filename)
-  console.log(newFilename)
   for (let i = 0; i < totalChunks; i++) {
     const target = `${filename}-${i}`
     const targetPath = path.resolve(tempDir, target)

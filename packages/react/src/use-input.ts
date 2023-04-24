@@ -1,4 +1,4 @@
-import { unref, Ref } from 'vue'
+import { RefObject } from 'react'
 import { createInupt, UploaderOption } from '@yuuki-uploader/core'
 
 export const useInput = (
@@ -12,14 +12,14 @@ export const useInput = (
     unRegisterDrop
   } = createInupt(option, addFileList)
 
-  const register = (elementRef: Ref<HTMLElement | undefined>) => {
-    const element = unref(elementRef)
+  const register = (elementRef: RefObject<HTMLElement>) => {
+    const element = elementRef.current
     if (element) {
       rawRegister(element)
     }
   }
-  const registerDrop = (elementRef: Ref<HTMLElement | undefined>) => {
-    const element = unref(elementRef)
+  const registerDrop = (elementRef: RefObject<HTMLElement>) => {
+    const element = elementRef.current
     if (element) {
       rawRegisterDrop(element)
     }

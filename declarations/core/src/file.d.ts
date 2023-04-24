@@ -27,3 +27,15 @@ export declare class UploadRawFile {
     get isCompleted(): boolean;
     updateProgress(): void;
 }
+export type UploadStatus = 'calculating' | 'waiting' | 'uploading' | 'compelete' | 'pause' | 'success' | 'fail';
+export interface UploadFile {
+    uid: number;
+    name: string;
+    size: number;
+    type: string;
+    progress: number;
+    currentSpeed: number;
+    averageSpeed: number;
+    status: UploadStatus;
+    raw: UploadRawFile;
+}

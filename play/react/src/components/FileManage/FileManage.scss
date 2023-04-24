@@ -1,0 +1,102 @@
+.file-manage {
+  margin: auto;
+  width: 600px;
+  height: 360px;
+
+  @media (max-width: 640px) {
+    width: 300px;
+  }
+
+  .file-list {
+    cursor: pointer;
+    list-style: none;
+    max-height: 280px;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    .file {
+      padding: 12px;
+
+      &:hover {
+        background-color: var(--fill-color-light);
+
+        .file-info {
+          color: var(--color-primary);
+
+          .icon {
+            color: var(--color-primary);
+          }
+        }
+      }
+
+      &-data {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .icon {
+          color: var(--text-regular);
+
+          &:hover {
+            color: var(--color-primary);
+          }
+        }
+
+        &.fail {
+          .file-info {
+            color: var(--color-danger);
+
+            .icon {
+              color: var(--color-danger);
+            }
+          }
+        }
+
+        &.success {
+          .file-info {
+            color: var(--color-success);
+
+            .icon {
+              color: var(--color-success);
+            }
+          }
+        }
+      }
+
+      &-info {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: var(--text-regular);
+
+        & > span {
+          margin-left: 6px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          max-width: 300px;
+
+          @media (max-width: 640px) {
+            max-width: 120px;
+          }
+        }
+      }
+
+      &-option {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 6px;
+      }
+
+      &-status {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 10px;
+        color: var(--text-regular);
+        padding: 6px;
+      }
+    }
+  }
+}

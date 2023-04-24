@@ -1,8 +1,6 @@
 import { RefObject } from 'react';
-import { UploadFile, UploaderOption } from '@yuuki-uploader/core';
-export { UploadFile, UploadStatus } from '@yuuki-uploader/core';
-
-interface Uploader {
+import { UploaderOption, UploadFile, UploadStatus } from '@yuuki-uploader/core';
+export interface Uploader {
     uploadList: UploadFile[];
     addFile: (rawFile: File) => Promise<void>;
     addFileList: (fileList: File[]) => Promise<void>;
@@ -19,6 +17,5 @@ interface Uploader {
     pauseAll: () => void;
     cancelAll: () => void;
 }
-declare const useUploader: (uploaderOption?: Partial<UploaderOption>) => Uploader;
-
-export { Uploader, useUploader };
+export declare const useUploader: (uploaderOption?: Partial<UploaderOption>) => Uploader;
+export type { UploadFile, UploadStatus };

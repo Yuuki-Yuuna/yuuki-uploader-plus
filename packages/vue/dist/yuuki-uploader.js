@@ -1,5 +1,5 @@
 import { unref, reactive, computed } from 'vue';
-import { createInupt, createRequestList, UploadRawFile, calculateFile } from '@yuuki-uploader/core';
+import { createInupt, defaultOption, createRequestList, UploadRawFile, calculateFile } from '@yuuki-uploader/core';
 
 const useInput = (option, addFileList) => {
   const {
@@ -118,6 +118,7 @@ const useUploader = (uploaderOption) => {
       const index = uploadList.findIndex((item) => item.uid === rawFile.uid);
       if (index !== -1) {
         const uploadFile = uploadList[index];
+        uploadFile.status = "pause";
         uploadList.splice(index, 1);
         onFileCancel?.(uploadFile);
       }
@@ -158,14 +159,14 @@ const useUploader = (uploaderOption) => {
   };
   const pause = (uploadFile) => {
     if (uploadFile.status === "uploading") {
-      clearRequest(uploadFile.raw, false);
+      clearRequest(uploadFile.raw);
     }
   };
   const pauseAll = () => {
     uploadList.filter((item) => item.status === "uploading").forEach((file) => pause(file));
   };
   const cancel = (uploadFile) => {
-    if (uploadFile.status === "uploading") {
+    if (["uploading", "pause", "compelete"].includes(uploadFile.status)) {
       clearRequest(uploadFile.raw, true);
     }
   };
@@ -194,23 +195,6 @@ const useUploader = (uploaderOption) => {
     pauseAll,
     cancelAll
   };
-};
-const defaultOption = {
-  target: "/",
-  mergeTarget: "/",
-  precheckTarget: "/",
-  accept: "",
-  multiple: true,
-  directoryMode: false,
-  chunkSize: 2 * 1024 * 1024,
-  concurrency: 3,
-  headers: {},
-  withCredentials: false,
-  retryCount: 3,
-  progressCallbacksInterval: 200,
-  successCodes: [200, 201, 202],
-  skipCodes: [204, 205, 206],
-  failCodes: [400, 404, 415, 500, 501]
 };
 
 export { useUploader };

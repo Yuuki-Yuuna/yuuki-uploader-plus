@@ -5,8 +5,12 @@
     "dev": "vite"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.0.1",
+    "antd": "^5.4.5",
+    "rc-queue-anim": "^2.0.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "yuuki-uploader-react": "workspace:^"
   },
   "devDependencies": {
     "@types/react": "^18.0.38",

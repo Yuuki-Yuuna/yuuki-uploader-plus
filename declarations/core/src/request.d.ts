@@ -12,6 +12,6 @@ interface RequestHandler {
 export type RequestOption = UploadOption & RequestHandler;
 export declare const createRequestList: (option: RequestOption) => {
     uploadRequest: (uploadFile: UploadRawFile, resume?: boolean) => Promise<void>;
-    clearRequest: (uploadFile: UploadRawFile, cancel: boolean) => void;
+    clearRequest: (uploadFile: UploadRawFile, cancel?: boolean) => void;
 };
 export {};

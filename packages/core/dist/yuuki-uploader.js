@@ -79,7 +79,7 @@ const createInupt = (option, addFileList) => {
   const dropTrigger = (event) => {
     event.preventDefault();
     const files = event.dataTransfer?.files;
-    const fileList = files && Array.from(files).filter((file) => accept.includes(file.type));
+    const fileList = files && Array.from(files).filter((file) => accept ? accept.includes(file.type) : true);
     if (fileList) {
       addFileList(fileList);
     }
@@ -147,7 +147,7 @@ const createRequestList = (option) => {
     requestList.push(request);
     requestNext();
   };
-  const clearRequest = (uploadFile, cancel) => {
+  const clearRequest = (uploadFile, cancel = false) => {
     requestList = requestList.filter((item) => item.uploadFile !== uploadFile);
     requestMap.get(uploadFile)?.forEach((xhr) => xhr.abort());
     requestMap.delete(uploadFile);
@@ -445,6 +445,24 @@ const createStart = (option, startOption) => {
   };
 };
 
+const defaultOption = {
+  target: "/",
+  mergeTarget: "/",
+  precheckTarget: "/",
+  accept: "",
+  multiple: true,
+  directoryMode: false,
+  chunkSize: 2 * 1024 * 1024,
+  concurrency: 3,
+  headers: {},
+  withCredentials: false,
+  retryCount: 3,
+  progressCallbacksInterval: 200,
+  successCodes: [200, 201, 202],
+  skipCodes: [204, 205, 206],
+  failCodes: [400, 404, 415, 500, 501]
+};
+
 let fileId = 0;
 const genFileId = () => Date.now() + fileId++;
 class UploadRawFile {
@@ -492,8 +510,8 @@ class UploadRawFile {
     this.currentSpeed = currentSpeed;
     this.averageSpeed = smoothingFactor * currentSpeed + (1 - smoothingFactor) * this.averageSpeed;
     this.lastTimestamp = timestamp;
-    this.progress = newProgress;
+    this.progress = Math.max(newProgress, this.progress);
   }
 }
 
-export { UploadRawFile, calculateFile, createInupt, createRequestList };
+export { UploadRawFile, calculateFile, createInupt, createRequestList, defaultOption };

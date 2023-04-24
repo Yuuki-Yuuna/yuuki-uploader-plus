@@ -1,8 +1,8 @@
-import { Ref } from 'vue';
+import { RefObject } from 'react';
 import { UploaderOption } from '@yuuki-uploader/core';
 export declare const useInput: (option: UploaderOption, addFileList: (fileList: File[]) => Promise<void>) => {
-    register: (elementRef: Ref<HTMLElement | undefined>) => void;
+    register: (elementRef: RefObject<HTMLElement>) => void;
     unRegister: () => void;
-    registerDrop: (elementRef: Ref<HTMLElement | undefined>) => void;
+    registerDrop: (elementRef: RefObject<HTMLElement>) => void;
     unRegisterDrop: () => void;
 };

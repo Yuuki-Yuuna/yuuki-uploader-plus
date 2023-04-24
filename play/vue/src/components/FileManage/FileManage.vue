@@ -7,7 +7,6 @@
       <el-tab-pane label="正在上传" name="uploading">
         <FileList :uploader="uploader" :file-list="uploadFiles" />
       </el-tab-pane>
-      <!-- <el-tab-pane label="上传完成" name="done"> </el-tab-pane> -->
     </el-tabs>
   </div>
 </template>
@@ -33,5 +32,13 @@ const uploadFiles = computed(() =>
 </script>
 
 <style lang="scss">
-@use './FileManage.scss';
+.file-manage {
+  margin: auto;
+  width: 600px;
+  height: 360px;
+
+  @media (max-width: 640px) {
+    width: 300px;
+  }
+}
 </style>

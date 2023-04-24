@@ -1,4 +1,4 @@
-import { computed, reactive, ComputedRef, Ref } from 'vue'
+import { useState, RefObject, useMemo, useEffect } from 'react'
 import {
   defaultOption,
   calculateFile,
@@ -12,12 +12,12 @@ import {
 import { useInput } from './use-input'
 
 export interface Uploader {
-  uploadList: ComputedRef<UploadFile[]>
+  uploadList: UploadFile[]
   addFile: (rawFile: File) => Promise<void>
   addFileList: (fileList: File[]) => Promise<void>
   removeFile: (uploadFile: UploadFile) => void
-  register: (element: Ref<HTMLElement | undefined>) => void
-  registerDrop: (element: Ref<HTMLElement | undefined>) => void
+  register: (element: RefObject<HTMLElement>) => void
+  registerDrop: (element: RefObject<HTMLElement>) => void
   unRegister: () => void
   unRegisterDrop: () => void
   upload: (uploadFile: UploadFile) => void
@@ -31,7 +31,7 @@ export interface Uploader {
 
 export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader => {
   const option: UploaderOption = { ...defaultOption, ...uploaderOption }
-  const uploadList: UploadFile[] = reactive([])
+  const [uploadList, setUploadList] = useState<UploadFile[]>([])
   const {
     onFileAdded,
     onFileReady,
@@ -45,7 +45,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
     onFileFail
   } = option
 
-  //实现响应式的核心方法
+  //在react中这个拿到的不是响应式的了
   const getFile = (rawFile: UploadRawFile) => uploadList.find((file) => file.uid === rawFile.uid)
 
   const addFile = async (file: File) => {
@@ -55,7 +55,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
     }
     const { name, size, type } = file
     const rawFile = new UploadRawFile(file)
-    uploadList.push({
+    const uploadFile: UploadFile = {
       uid: rawFile.uid,
       progress: 0,
       averageSpeed: 0,
@@ -65,11 +65,13 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
       name,
       size,
       type
-    })
-    const uploadFile = getFile(rawFile)! //我们需要获得proxy代理对象实现响应式
+    }
+    setUploadList((uploadList) => [...uploadList, uploadFile])
+
     try {
       await calculateFile(option, rawFile)
       uploadFile.status = 'waiting'
+      setUploadList((uploadList) => [...uploadList])
       onFileReady?.(uploadFile)
     } catch {
       throw new Error('something wrong when file chunk is calculated.')
@@ -86,8 +88,8 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
     const index = uploadList.findIndex((item) => item.uid === uploadFile.uid)
     const canRemove = (['waiting', 'success', 'fail'] as UploadStatus[]).includes(uploadFile.status)
     if (canRemove && index !== -1) {
-      uploadList.splice(index, 1)
-      onFileRemoved?.(uploadFile) //返回普通对象
+      setUploadList(uploadList.filter((item) => item.uid !== uploadFile.uid))
+      onFileRemoved?.(uploadFile)
     }
   }
 
@@ -95,12 +97,13 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
 
   const requestOption: RequestOption = {
     ...option,
-    onStart: (rawFile) => {
+    onStart(rawFile) {
       const uploadFile = getFile(rawFile)
       if (!uploadFile) {
         return
       }
       uploadFile.status = 'uploading'
+      setUploadList((uploadList) => [...uploadList])
       onFileStart?.(uploadFile)
     },
     onProgress: (rawFile) => {
@@ -112,6 +115,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
       uploadFile.averageSpeed = rawFile.averageSpeed
       uploadFile.currentSpeed = rawFile.currentSpeed
       uploadFile.progress = parseFloat((rawFile.progress * 100).toFixed(1))
+      setUploadList((uploadList) => [...uploadList])
       onFileProgress?.(uploadFile)
     },
     onPause: (rawFile) => {
@@ -120,6 +124,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
         return
       }
       uploadFile.status = 'pause'
+      setUploadList((uploadList) => [...uploadList])
       onFilePause?.(uploadFile)
     },
     onCancel: (rawFile) => {
@@ -127,7 +132,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
       if (index !== -1) {
         const uploadFile = uploadList[index]
         uploadFile.status = 'pause'
-        uploadList.splice(index, 1)
+        setUploadList((uploadList) => uploadList.filter((file) => file.uid !== uploadFile.uid))
         onFileCancel?.(uploadFile)
       }
     },
@@ -137,6 +142,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
         return
       }
       uploadFile.status = 'compelete'
+      setUploadList((uploadList) => [...uploadList])
       onFileComplete?.(uploadFile)
     },
     onSuccess: (rawFile) => {
@@ -145,6 +151,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
         return
       }
       uploadFile.status = 'success'
+      setUploadList((uploadList) => [...uploadList])
       onFileSuccess?.(uploadFile)
     },
     onFail: (rawFile, error) => {
@@ -153,6 +160,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
         return
       }
       uploadFile.status = 'fail'
+      setUploadList((uploadList) => [...uploadList])
       onFileFail?.(uploadFile, error)
     }
   }
@@ -196,7 +204,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
   }
 
   return {
-    uploadList: computed(() => uploadList),
+    uploadList,
     addFile,
     addFileList,
     removeFile,

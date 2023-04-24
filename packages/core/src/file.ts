@@ -69,6 +69,27 @@ export class UploadRawFile {
     this.currentSpeed = currentSpeed
     this.averageSpeed = smoothingFactor * currentSpeed + (1 - smoothingFactor) * this.averageSpeed
     this.lastTimestamp = timestamp
-    this.progress = newProgress
+    this.progress = Math.max(newProgress, this.progress)
   }
+}
+
+export type UploadStatus =
+  | 'calculating'
+  | 'waiting'
+  | 'uploading'
+  | 'compelete'
+  | 'pause'
+  | 'success'
+  | 'fail'
+
+export interface UploadFile {
+  uid: number
+  name: string
+  size: number
+  type: string
+  progress: number
+  currentSpeed: number
+  averageSpeed: number
+  status: UploadStatus
+  raw: UploadRawFile
 }

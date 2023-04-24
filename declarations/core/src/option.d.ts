@@ -1,6 +1,6 @@
-import { UploadRawFile } from './file';
+import { UploadRawFile, UploadFile } from './file';
 type Awaitble<T> = T | Promise<T>;
-export type Option<T = UploadRawFile> = FileOption & UploadOption & EventHandler<T>;
+export type UploaderOption = FileOption & UploadOption & EventHandler;
 export interface FileOption {
     accept: string;
     multiple: boolean;
@@ -28,19 +28,20 @@ export interface DragHandler {
     onDragOver?: (event: DragEvent) => void;
     onDragLeave?: (event: DragEvent) => void;
 }
-export interface FileHandler<T = UploadRawFile> {
+export interface FileHandler {
     onFileAdded?: (file: File) => Awaitble<boolean | void>;
-    onFileReady?: (file: T) => Awaitble<void>;
-    onFileRemoved?: (file: T) => void;
+    onFileReady?: (file: UploadFile) => Awaitble<void>;
+    onFileRemoved?: (file: UploadFile) => void;
 }
-export interface UploadHandler<T = UploadRawFile> {
-    onFileStart?: (file: T) => void;
-    onFileProgress?: (file: T) => void;
-    onFilePause?: (file: T) => void;
-    onFileCancel?: (file: T) => void;
-    onFileComplete?: (file: T) => void;
-    onFileSuccess?: (file: T) => void;
-    onFileFail?: (file: T, error: Error) => void;
+export interface UploadHandler {
+    onFileStart?: (file: UploadFile) => void;
+    onFileProgress?: (file: UploadFile) => void;
+    onFilePause?: (file: UploadFile) => void;
+    onFileCancel?: (file: UploadFile) => void;
+    onFileComplete?: (file: UploadFile) => void;
+    onFileSuccess?: (file: UploadFile) => void;
+    onFileFail?: (file: UploadFile, error: Error) => void;
 }
-export type EventHandler<T = UploadRawFile> = DragHandler & FileHandler<T> & UploadHandler<T>;
+export type EventHandler = DragHandler & FileHandler & UploadHandler;
+export declare const defaultOption: UploaderOption;
 export {};

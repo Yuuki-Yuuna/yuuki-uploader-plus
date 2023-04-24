@@ -1,0 +1,53 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  line-height: normal;
+  --color-primary: #1677ff;
+  --color-success: #52c41a;
+  --color-danger: #ff4d4f;
+  --text-regular: #434343;
+  --border-color: #dcdfe6;
+  --fill-color-light: #f5f7fa;
+}
+
+#root {
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+.app-container {
+  max-width: 1024px;
+  margin: auto;
+  padding: 24px;
+  text-align: center;
+  overflow-x: hidden;
+
+  .app-container-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+
+    .logo-react:hover {
+      filter: drop-shadow(0 0 2em #61dafbaa);
+    }
+    .logo-yuuki:hover {
+      filter: drop-shadow(0 0 2em #fea499);
+    }
+  }
+
+  .app-content {
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 50px;
+
+    @media (max-width: 678px) {
+      flex-direction: column;
+    }
+  }
+}

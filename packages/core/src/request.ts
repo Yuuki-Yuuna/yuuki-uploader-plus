@@ -69,7 +69,7 @@ export const createRequestList = (option: RequestOption) => {
     requestNext()
   }
 
-  const clearRequest = (uploadFile: UploadRawFile, cancel: boolean) => {
+  const clearRequest = (uploadFile: UploadRawFile, cancel: boolean = false) => {
     requestList = requestList.filter((item) => item.uploadFile !== uploadFile)
     requestMap.get(uploadFile)?.forEach((xhr) => xhr.abort())
     requestMap.delete(uploadFile)
@@ -117,7 +117,7 @@ export const createRequestList = (option: RequestOption) => {
           case RequestResult.success:
             // 过快更新进度
             if (Date.now() - uploadFile.lastTimestamp < progressCallbacksInterval) {
-              uploadFile.chunksLoaded = uploadFile.chunks.map(chunk => chunk.currentSize)
+              uploadFile.chunksLoaded = uploadFile.chunks.map((chunk) => chunk.currentSize)
               uploadFile.updateProgress()
               onProgress(uploadFile)
             }

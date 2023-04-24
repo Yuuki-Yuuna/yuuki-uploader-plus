@@ -39,7 +39,8 @@ export const createInupt = (
   const dropTrigger = (event: DragEvent) => {
     event.preventDefault()
     const files = event.dataTransfer?.files
-    const fileList = files && Array.from(files).filter((file) => accept.includes(file.type))
+    const fileList =
+      files && Array.from(files).filter((file) => (accept ? accept.includes(file.type) : true))
     if (fileList) {
       addFileList(fileList)
     }

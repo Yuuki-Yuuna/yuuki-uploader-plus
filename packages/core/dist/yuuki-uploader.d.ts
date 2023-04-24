@@ -27,9 +27,21 @@ declare class UploadRawFile {
     get isCompleted(): boolean;
     updateProgress(): void;
 }
+type UploadStatus = 'calculating' | 'waiting' | 'uploading' | 'compelete' | 'pause' | 'success' | 'fail';
+interface UploadFile {
+    uid: number;
+    name: string;
+    size: number;
+    type: string;
+    progress: number;
+    currentSpeed: number;
+    averageSpeed: number;
+    status: UploadStatus;
+    raw: UploadRawFile;
+}
 
 type Awaitble<T> = T | Promise<T>;
-type Option<T = UploadRawFile> = FileOption & UploadOption & EventHandler<T>;
+type UploaderOption = FileOption & UploadOption & EventHandler;
 interface FileOption {
     accept: string;
     multiple: boolean;
@@ -57,21 +69,22 @@ interface DragHandler {
     onDragOver?: (event: DragEvent) => void;
     onDragLeave?: (event: DragEvent) => void;
 }
-interface FileHandler<T = UploadRawFile> {
+interface FileHandler {
     onFileAdded?: (file: File) => Awaitble<boolean | void>;
-    onFileReady?: (file: T) => Awaitble<void>;
-    onFileRemoved?: (file: T) => void;
+    onFileReady?: (file: UploadFile) => Awaitble<void>;
+    onFileRemoved?: (file: UploadFile) => void;
 }
-interface UploadHandler<T = UploadRawFile> {
-    onFileStart?: (file: T) => void;
-    onFileProgress?: (file: T) => void;
-    onFilePause?: (file: T) => void;
-    onFileCancel?: (file: T) => void;
-    onFileComplete?: (file: T) => void;
-    onFileSuccess?: (file: T) => void;
-    onFileFail?: (file: T, error: Error) => void;
+interface UploadHandler {
+    onFileStart?: (file: UploadFile) => void;
+    onFileProgress?: (file: UploadFile) => void;
+    onFilePause?: (file: UploadFile) => void;
+    onFileCancel?: (file: UploadFile) => void;
+    onFileComplete?: (file: UploadFile) => void;
+    onFileSuccess?: (file: UploadFile) => void;
+    onFileFail?: (file: UploadFile, error: Error) => void;
 }
-type EventHandler<T = UploadRawFile> = DragHandler & FileHandler<T> & UploadHandler<T>;
+type EventHandler = DragHandler & FileHandler & UploadHandler;
+declare const defaultOption: UploaderOption;
 
 declare const calculateFile: (option: FileOption, uploadFile: UploadRawFile) => Promise<UploadRawFile>;
 
@@ -94,7 +107,7 @@ interface RequestHandler {
 type RequestOption = UploadOption & RequestHandler;
 declare const createRequestList: (option: RequestOption) => {
     uploadRequest: (uploadFile: UploadRawFile, resume?: boolean) => Promise<void>;
-    clearRequest: (uploadFile: UploadRawFile, cancel: boolean) => void;
+    clearRequest: (uploadFile: UploadRawFile, cancel?: boolean) => void;
 };
 
-export { DragHandler, EventHandler, FileHandler, Option, RequestOption, UploadHandler, UploadRawFile, calculateFile, createInupt, createRequestList };
+export { DragHandler, EventHandler, FileHandler, RequestOption, UploadFile, UploadHandler, UploadRawFile, UploadStatus, UploaderOption, calculateFile, createInupt, createRequestList, defaultOption };
