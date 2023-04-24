@@ -10,6 +10,36 @@ const App: React.FC = () => {
     target: `${baseUrl}/upload`,
     mergeTarget: `${baseUrl}/merge`,
     precheckTarget: `${baseUrl}/precheck`
+    // onFileAdded: (file) => {
+    //   console.log('文件添加', file)
+    // },
+    // onFileRemoved: (file) => {
+    //   console.log('文件被移除', file)
+    // },
+    // onFileReady: (file) => {
+    //   console.log('文件就绪', file)
+    // },
+    // onFileProgress: (file) => {
+    //   console.log('文件上传中', file)
+    // },
+    // onFileStart: (file) => {
+    //   console.log('上传开始', file)
+    // }
+    // onFileComplete: (file) => {
+    //   console.log('文件分块上传完毕', file)
+    // },
+    // onFileSuccess: (file) => {
+    //   console.log('上传成功', file)
+    // },
+    // onFileCancel: (file) => {
+    //   console.log('上传取消', file)
+    // },
+    // onFilePause: (file) => {
+    //   console.log('上传暂停', file)
+    // },
+    // onFileFail: (file) => {
+    //   console.log('上传失败', file)
+    // },
   })
 
   return (

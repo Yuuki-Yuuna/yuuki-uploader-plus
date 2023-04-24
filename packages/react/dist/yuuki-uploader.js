@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { createInupt, defaultOption, createRequestList, UploadRawFile, calculateFile } from '@yuuki-uploader/core';
 
 const useInput = (option, addFileList) => {
@@ -31,6 +31,7 @@ const useInput = (option, addFileList) => {
 const useUploader = (uploaderOption) => {
   const option = { ...defaultOption, ...uploaderOption };
   const [uploadList, setUploadList] = useState([]);
+  const listRef = useRef([]);
   const {
     onFileAdded,
     onFileReady,
@@ -43,7 +44,7 @@ const useUploader = (uploaderOption) => {
     onFileSuccess,
     onFileFail
   } = option;
-  const getFile = (rawFile) => uploadList.find((file) => file.uid === rawFile.uid);
+  const getFile = (rawFile) => listRef.current.find((file) => file.uid === rawFile.uid);
   const addFile = async (file) => {
     const result = await onFileAdded?.(file) ?? true;
     if (!result) {
@@ -51,7 +52,7 @@ const useUploader = (uploaderOption) => {
     }
     const { name, size, type } = file;
     const rawFile = new UploadRawFile(file);
-    const uploadFile = {
+    listRef.current.push({
       uid: rawFile.uid,
       progress: 0,
       averageSpeed: 0,
@@ -61,12 +62,13 @@ const useUploader = (uploaderOption) => {
       name,
       size,
       type
-    };
-    setUploadList((uploadList2) => [...uploadList2, uploadFile]);
+    });
+    setUploadList([...listRef.current]);
     try {
       await calculateFile(option, rawFile);
+      const uploadFile = getFile(rawFile);
       uploadFile.status = "waiting";
-      setUploadList((uploadList2) => [...uploadList2]);
+      setUploadList([...listRef.current]);
       onFileReady?.(uploadFile);
     } catch {
       throw new Error("something wrong when file chunk is calculated.");
@@ -78,14 +80,17 @@ const useUploader = (uploaderOption) => {
     }
   };
   const removeFile = (uploadFile) => {
-    const index = uploadList.findIndex((item) => item.uid === uploadFile.uid);
+    const index = listRef.current.findIndex((item) => item.uid === uploadFile.uid);
     const canRemove = ["waiting", "success", "fail"].includes(uploadFile.status);
     if (canRemove && index !== -1) {
-      setUploadList(uploadList.filter((item) => item.uid !== uploadFile.uid));
+      listRef.current.splice(index, 1);
+      setUploadList([...listRef.current]);
       onFileRemoved?.(uploadFile);
     }
   };
-  const { register, unRegister, registerDrop, unRegisterDrop } = useInput(option, addFileList);
+  const { register, unRegister, registerDrop, unRegisterDrop } = useRef(
+    useInput(option, addFileList)
+  ).current;
   const requestOption = {
     ...option,
     onStart(rawFile) {
@@ -94,7 +99,7 @@ const useUploader = (uploaderOption) => {
         return;
       }
       uploadFile.status = "uploading";
-      setUploadList((uploadList2) => [...uploadList2]);
+      setUploadList([...listRef.current]);
       onFileStart?.(uploadFile);
     },
     onProgress: (rawFile) => {
@@ -106,7 +111,7 @@ const useUploader = (uploaderOption) => {
       uploadFile.averageSpeed = rawFile.averageSpeed;
       uploadFile.currentSpeed = rawFile.currentSpeed;
       uploadFile.progress = parseFloat((rawFile.progress * 100).toFixed(1));
-      setUploadList((uploadList2) => [...uploadList2]);
+      setUploadList([...listRef.current]);
       onFileProgress?.(uploadFile);
     },
     onPause: (rawFile) => {
@@ -115,15 +120,16 @@ const useUploader = (uploaderOption) => {
         return;
       }
       uploadFile.status = "pause";
-      setUploadList((uploadList2) => [...uploadList2]);
+      setUploadList([...listRef.current]);
       onFilePause?.(uploadFile);
     },
     onCancel: (rawFile) => {
-      const index = uploadList.findIndex((item) => item.uid === rawFile.uid);
+      const index = listRef.current.findIndex((item) => item.uid === rawFile.uid);
       if (index !== -1) {
-        const uploadFile = uploadList[index];
+        const uploadFile = listRef.current[index];
         uploadFile.status = "pause";
-        setUploadList((uploadList2) => uploadList2.filter((file) => file.uid !== uploadFile.uid));
+        listRef.current.splice(index, 1);
+        setUploadList([...listRef.current]);
         onFileCancel?.(uploadFile);
       }
     },
@@ -133,7 +139,7 @@ const useUploader = (uploaderOption) => {
         return;
       }
       uploadFile.status = "compelete";
-      setUploadList((uploadList2) => [...uploadList2]);
+      setUploadList([...listRef.current]);
       onFileComplete?.(uploadFile);
     },
     onSuccess: (rawFile) => {
@@ -142,7 +148,7 @@ const useUploader = (uploaderOption) => {
         return;
       }
       uploadFile.status = "success";
-      setUploadList((uploadList2) => [...uploadList2]);
+      setUploadList([...listRef.current]);
       onFileSuccess?.(uploadFile);
     },
     onFail: (rawFile, error) => {
@@ -151,18 +157,18 @@ const useUploader = (uploaderOption) => {
         return;
       }
       uploadFile.status = "fail";
-      setUploadList((uploadList2) => [...uploadList2]);
+      setUploadList([...listRef.current]);
       onFileFail?.(uploadFile, error);
     }
   };
-  const { uploadRequest, clearRequest } = createRequestList(requestOption);
+  const { uploadRequest, clearRequest } = useRef(createRequestList(requestOption)).current;
   const upload = (uploadFile) => {
     if (uploadFile.status === "waiting") {
       uploadRequest(uploadFile.raw);
     }
   };
   const uploadAll = () => {
-    uploadList.filter((item) => item.status === "waiting").forEach((file) => upload(file));
+    listRef.current.filter((item) => item.status === "waiting").forEach((file) => upload(file));
   };
   const pause = (uploadFile) => {
     if (uploadFile.status === "uploading") {
@@ -170,7 +176,7 @@ const useUploader = (uploaderOption) => {
     }
   };
   const pauseAll = () => {
-    uploadList.filter((item) => item.status === "uploading").forEach((file) => pause(file));
+    listRef.current.filter((item) => item.status === "uploading").forEach((file) => pause(file));
   };
   const cancel = (uploadFile) => {
     if (["uploading", "pause", "compelete"].includes(uploadFile.status)) {
@@ -178,7 +184,7 @@ const useUploader = (uploaderOption) => {
     }
   };
   const cancelAll = () => {
-    uploadList.filter((item) => item.status === "uploading").forEach((file) => cancel(file));
+    listRef.current.filter((item) => item.status === "uploading").forEach((file) => cancel(file));
   };
   const resume = (uploadFile) => {
     if (uploadFile.status === "pause") {

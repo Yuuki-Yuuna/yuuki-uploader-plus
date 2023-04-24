@@ -1,4 +1,4 @@
-import { useState, RefObject, useMemo, useEffect } from 'react'
+import { useState, RefObject, useRef } from 'react'
 import {
   defaultOption,
   calculateFile,
@@ -32,6 +32,7 @@ export interface Uploader {
 export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader => {
   const option: UploaderOption = { ...defaultOption, ...uploaderOption }
   const [uploadList, setUploadList] = useState<UploadFile[]>([])
+  const listRef = useRef<UploadFile[]>([]) //随时维护一个最新的值(异步渲染这个真的逆天，无语！)
   const {
     onFileAdded,
     onFileReady,
@@ -45,8 +46,9 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
     onFileFail
   } = option
 
-  //在react中这个拿到的不是响应式的了
-  const getFile = (rawFile: UploadRawFile) => uploadList.find((file) => file.uid === rawFile.uid)
+  //保证能够拿到最新的值
+  const getFile = (rawFile: UploadRawFile) =>
+    listRef.current.find((file) => file.uid === rawFile.uid)
 
   const addFile = async (file: File) => {
     const result = (await onFileAdded?.(file)) ?? true
@@ -55,7 +57,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
     }
     const { name, size, type } = file
     const rawFile = new UploadRawFile(file)
-    const uploadFile: UploadFile = {
+    listRef.current.push({
       uid: rawFile.uid,
       progress: 0,
       averageSpeed: 0,
@@ -65,13 +67,14 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
       name,
       size,
       type
-    }
-    setUploadList((uploadList) => [...uploadList, uploadFile])
+    })
+    setUploadList([...listRef.current])
 
     try {
       await calculateFile(option, rawFile)
+      const uploadFile = getFile(rawFile)!
       uploadFile.status = 'waiting'
-      setUploadList((uploadList) => [...uploadList])
+      setUploadList([...listRef.current])
       onFileReady?.(uploadFile)
     } catch {
       throw new Error('something wrong when file chunk is calculated.')
@@ -85,15 +88,19 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
   }
 
   const removeFile = (uploadFile: UploadFile) => {
-    const index = uploadList.findIndex((item) => item.uid === uploadFile.uid)
+    const index = listRef.current.findIndex((item) => item.uid === uploadFile.uid)
     const canRemove = (['waiting', 'success', 'fail'] as UploadStatus[]).includes(uploadFile.status)
     if (canRemove && index !== -1) {
-      setUploadList(uploadList.filter((item) => item.uid !== uploadFile.uid))
+      listRef.current.splice(index, 1)
+      setUploadList([...listRef.current])
       onFileRemoved?.(uploadFile)
     }
   }
 
-  const { register, unRegister, registerDrop, unRegisterDrop } = useInput(option, addFileList)
+  // 防止重新渲染被替换
+  const { register, unRegister, registerDrop, unRegisterDrop } = useRef(
+    useInput(option, addFileList)
+  ).current
 
   const requestOption: RequestOption = {
     ...option,
@@ -103,7 +110,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
         return
       }
       uploadFile.status = 'uploading'
-      setUploadList((uploadList) => [...uploadList])
+      setUploadList([...listRef.current])
       onFileStart?.(uploadFile)
     },
     onProgress: (rawFile) => {
@@ -115,7 +122,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
       uploadFile.averageSpeed = rawFile.averageSpeed
       uploadFile.currentSpeed = rawFile.currentSpeed
       uploadFile.progress = parseFloat((rawFile.progress * 100).toFixed(1))
-      setUploadList((uploadList) => [...uploadList])
+      setUploadList([...listRef.current])
       onFileProgress?.(uploadFile)
     },
     onPause: (rawFile) => {
@@ -124,15 +131,16 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
         return
       }
       uploadFile.status = 'pause'
-      setUploadList((uploadList) => [...uploadList])
+      setUploadList([...listRef.current])
       onFilePause?.(uploadFile)
     },
     onCancel: (rawFile) => {
-      const index = uploadList.findIndex((item) => item.uid === rawFile.uid)
+      const index = listRef.current.findIndex((item) => item.uid === rawFile.uid)
       if (index !== -1) {
-        const uploadFile = uploadList[index]
+        const uploadFile = listRef.current[index]
         uploadFile.status = 'pause'
-        setUploadList((uploadList) => uploadList.filter((file) => file.uid !== uploadFile.uid))
+        listRef.current.splice(index, 1)
+        setUploadList([...listRef.current])
         onFileCancel?.(uploadFile)
       }
     },
@@ -142,7 +150,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
         return
       }
       uploadFile.status = 'compelete'
-      setUploadList((uploadList) => [...uploadList])
+      setUploadList([...listRef.current])
       onFileComplete?.(uploadFile)
     },
     onSuccess: (rawFile) => {
@@ -151,7 +159,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
         return
       }
       uploadFile.status = 'success'
-      setUploadList((uploadList) => [...uploadList])
+      setUploadList([...listRef.current])
       onFileSuccess?.(uploadFile)
     },
     onFail: (rawFile, error) => {
@@ -160,12 +168,13 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
         return
       }
       uploadFile.status = 'fail'
-      setUploadList((uploadList) => [...uploadList])
+      setUploadList([...listRef.current])
       onFileFail?.(uploadFile, error)
     }
   }
 
-  const { uploadRequest, clearRequest } = createRequestList(requestOption)
+  // 防止重新渲染被替换
+  const { uploadRequest, clearRequest } = useRef(createRequestList(requestOption)).current
 
   const upload = (uploadFile: UploadFile) => {
     if (uploadFile.status === 'waiting') {
@@ -174,7 +183,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
   }
 
   const uploadAll = () => {
-    uploadList.filter((item) => item.status === 'waiting').forEach((file) => upload(file))
+    listRef.current.filter((item) => item.status === 'waiting').forEach((file) => upload(file))
   }
 
   const pause = (uploadFile: UploadFile) => {
@@ -184,7 +193,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
   }
 
   const pauseAll = () => {
-    uploadList.filter((item) => item.status === 'uploading').forEach((file) => pause(file))
+    listRef.current.filter((item) => item.status === 'uploading').forEach((file) => pause(file))
   }
 
   const cancel = (uploadFile: UploadFile) => {
@@ -194,7 +203,7 @@ export const useUploader = (uploaderOption?: Partial<UploaderOption>): Uploader 
   }
 
   const cancelAll = () => {
-    uploadList.filter((item) => item.status === 'uploading').forEach((file) => cancel(file))
+    listRef.current.filter((item) => item.status === 'uploading').forEach((file) => cancel(file))
   }
 
   const resume = (uploadFile: UploadFile) => {
