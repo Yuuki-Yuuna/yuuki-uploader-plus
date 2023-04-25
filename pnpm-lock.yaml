@@ -16,6 +16,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^5.59.0
         version: registry.npmmirror.com/@typescript-eslint/parser@5.59.0(eslint@8.38.0)(typescript@5.0.4)
+      '@yuuki-uploader/core':
+        specifier: workspace:^
+        version: link:packages/core
       eslint:
         specifier: ^8.38.0
         version: registry.npmmirror.com/eslint@8.38.0
@@ -59,18 +62,12 @@ importers:
 
   packages/react:
     dependencies:
-      '@yuuki-uploader/core':
-        specifier: workspace:^
-        version: link:../core
       react:
         specifier: ^18.2.0
         version: registry.npmmirror.com/react@18.2.0
 
   packages/vue:
     dependencies:
-      '@yuuki-uploader/core':
-        specifier: workspace:^
-        version: link:../core
       vue:
         specifier: 3.2.47
         version: registry.npmmirror.com/vue@3.2.47

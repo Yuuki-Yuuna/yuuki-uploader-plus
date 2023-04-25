@@ -18,8 +18,5 @@
   "license": "MIT",
   "peerDependencies": {
     "vue": "3.2.47"
-  },
-  "dependencies": {
-    "@yuuki-uploader/core": "workspace:^"
   }
 }
