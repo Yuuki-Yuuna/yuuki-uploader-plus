@@ -91,77 +91,78 @@ const useUploader = (uploaderOption) => {
   const { register, unRegister, registerDrop, unRegisterDrop } = useRef(
     useInput(option, addFileList)
   ).current;
-  const requestOption = {
-    ...option,
-    onStart(rawFile) {
-      const uploadFile = getFile(rawFile);
-      if (!uploadFile) {
-        return;
-      }
-      uploadFile.status = "uploading";
-      setUploadList([...listRef.current]);
-      onFileStart?.(uploadFile);
-    },
-    onProgress: (rawFile) => {
-      const uploadFile = getFile(rawFile);
-      if (!uploadFile) {
-        return;
-      }
-      uploadFile.status = "uploading";
-      uploadFile.averageSpeed = rawFile.averageSpeed;
-      uploadFile.currentSpeed = rawFile.currentSpeed;
-      uploadFile.progress = parseFloat((rawFile.progress * 100).toFixed(1));
-      setUploadList([...listRef.current]);
-      onFileProgress?.(uploadFile);
-    },
-    onPause: (rawFile) => {
-      const uploadFile = getFile(rawFile);
-      if (!uploadFile) {
-        return;
-      }
-      uploadFile.status = "pause";
-      setUploadList([...listRef.current]);
-      onFilePause?.(uploadFile);
-    },
-    onCancel: (rawFile) => {
-      const index = listRef.current.findIndex((item) => item.uid === rawFile.uid);
-      if (index !== -1) {
-        const uploadFile = listRef.current[index];
-        uploadFile.status = "pause";
-        listRef.current.splice(index, 1);
+  const { uploadRequest, clearRequest } = useRef(
+    createRequestList({
+      ...option,
+      onStart(rawFile) {
+        const uploadFile = getFile(rawFile);
+        if (!uploadFile) {
+          return;
+        }
+        uploadFile.status = "uploading";
         setUploadList([...listRef.current]);
-        onFileCancel?.(uploadFile);
+        onFileStart?.(uploadFile);
+      },
+      onProgress: (rawFile) => {
+        const uploadFile = getFile(rawFile);
+        if (!uploadFile) {
+          return;
+        }
+        uploadFile.status = "uploading";
+        uploadFile.averageSpeed = rawFile.averageSpeed;
+        uploadFile.currentSpeed = rawFile.currentSpeed;
+        uploadFile.progress = parseFloat((rawFile.progress * 100).toFixed(1));
+        setUploadList([...listRef.current]);
+        onFileProgress?.(uploadFile);
+      },
+      onPause: (rawFile) => {
+        const uploadFile = getFile(rawFile);
+        if (!uploadFile) {
+          return;
+        }
+        uploadFile.status = "pause";
+        setUploadList([...listRef.current]);
+        onFilePause?.(uploadFile);
+      },
+      onCancel: (rawFile) => {
+        const index = listRef.current.findIndex((item) => item.uid === rawFile.uid);
+        if (index !== -1) {
+          const uploadFile = listRef.current[index];
+          uploadFile.status = "pause";
+          listRef.current.splice(index, 1);
+          setUploadList([...listRef.current]);
+          onFileCancel?.(uploadFile);
+        }
+      },
+      onComplete: (rawFile) => {
+        const uploadFile = getFile(rawFile);
+        if (!uploadFile) {
+          return;
+        }
+        uploadFile.status = "compelete";
+        setUploadList([...listRef.current]);
+        onFileComplete?.(uploadFile);
+      },
+      onSuccess: (rawFile) => {
+        const uploadFile = getFile(rawFile);
+        if (!uploadFile) {
+          return;
+        }
+        uploadFile.status = "success";
+        setUploadList([...listRef.current]);
+        onFileSuccess?.(uploadFile);
+      },
+      onFail: (rawFile, error) => {
+        const uploadFile = getFile(rawFile);
+        if (!uploadFile) {
+          return;
+        }
+        uploadFile.status = "fail";
+        setUploadList([...listRef.current]);
+        onFileFail?.(uploadFile, error);
       }
-    },
-    onComplete: (rawFile) => {
-      const uploadFile = getFile(rawFile);
-      if (!uploadFile) {
-        return;
-      }
-      uploadFile.status = "compelete";
-      setUploadList([...listRef.current]);
-      onFileComplete?.(uploadFile);
-    },
-    onSuccess: (rawFile) => {
-      const uploadFile = getFile(rawFile);
-      if (!uploadFile) {
-        return;
-      }
-      uploadFile.status = "success";
-      setUploadList([...listRef.current]);
-      onFileSuccess?.(uploadFile);
-    },
-    onFail: (rawFile, error) => {
-      const uploadFile = getFile(rawFile);
-      if (!uploadFile) {
-        return;
-      }
-      uploadFile.status = "fail";
-      setUploadList([...listRef.current]);
-      onFileFail?.(uploadFile, error);
-    }
-  };
-  const { uploadRequest, clearRequest } = useRef(createRequestList(requestOption)).current;
+    })
+  ).current;
   const upload = (uploadFile) => {
     if (uploadFile.status === "waiting") {
       uploadRequest(uploadFile.raw);
