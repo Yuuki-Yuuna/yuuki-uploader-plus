@@ -178,6 +178,33 @@ export interface EventHandler {
 type Awaitble<T> = T | Promise<T>
 ```
 
+### UploadFile
+
+响应式文件列表中维护的文件的类型
+
+```ts
+export interface UploadFile {
+  uid: number //文件uid
+  name: string //文件名，同原生文件名
+  size: number //文件大小，同原生文件大小
+  type: string //文件类型，同原生文件类型
+  progress: number //文件进度，0~100保留一位小数
+  currentSpeed: number //文件瞬时速度(单位bytpe/s)
+  averageSpeed: number //文件平均速度(单位bytpe/s)
+  status: UploadStatus //文件状态
+  raw: UploadRawFile //内部API使用的文件对象
+}
+
+export type UploadStatus =
+  | 'calculating'
+  | 'waiting'
+  | 'uploading'
+  | 'compelete'
+  | 'pause'
+  | 'success'
+  | 'fail'
+```
+
 ## 简单示例
 
 源代码中提供了简单的上传示例，clone 代码并运行`pnpm install`后，可以运行`pnpm dev:vue`或`pnpm dev:react`启动 vue 示例或 react 示例，同时需要运行`pnpm dev:server`启动 node.js 示例服务。
