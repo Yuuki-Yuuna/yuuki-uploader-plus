@@ -1,5 +1,5 @@
 import { RefObject } from 'react';
-import { UploaderOption, UploadFile, UploadStatus } from '@yuuki-uploader/core';
+import { UploaderOption, UploadFile, UploadStatus } from 'yuuki-uploader-core';
 export interface Uploader {
     uploadList: UploadFile[];
     addFile: (rawFile: File) => Promise<void>;

@@ -1,5 +1,5 @@
 {
-  "name": "@yuuki-uploader/core",
+  "name": "yuuki-uploader-core",
   "version": "1.0.0",
   "description": "@yuuki-uploader/core",
   "main": "./dist/yuuki-uploader.js",

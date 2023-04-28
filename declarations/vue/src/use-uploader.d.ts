@@ -1,5 +1,5 @@
 import { ComputedRef, Ref } from 'vue';
-import { UploaderOption, UploadFile, UploadStatus } from '@yuuki-uploader/core';
+import { UploaderOption, UploadFile, UploadStatus } from 'yuuki-uploader-core';
 export interface Uploader {
     uploadList: ComputedRef<UploadFile[]>;
     addFile: (rawFile: File) => Promise<void>;

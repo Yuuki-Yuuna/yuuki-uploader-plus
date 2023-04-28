@@ -1,6 +1,6 @@
 {
   "name": "yuuki-uploader-vue",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "vue3实现的大文件分片上传器",
   "type": "module",
   "main": "./dist/yuuki-uploader.js",
@@ -20,6 +20,7 @@
     "vue": "3.2.47"
   },
   "dependencies": {
-    "spark-md5": "^3.0.2"
+    "spark-md5": "^3.0.2",
+    "yuuki-uploader-core": "workspace:^"
   }
 }

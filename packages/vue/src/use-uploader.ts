@@ -8,7 +8,7 @@ import {
   UploadRawFile,
   UploadFile,
   UploadStatus
-} from '@yuuki-uploader/core'
+} from 'yuuki-uploader-core'
 import { useInput } from './use-input'
 
 export interface Uploader {

@@ -1,5 +1,5 @@
 import { unref, Ref } from 'vue'
-import { createInupt, UploaderOption } from '@yuuki-uploader/core'
+import { createInupt, UploaderOption } from 'yuuki-uploader-core'
 
 export const useInput = (
   option: UploaderOption,

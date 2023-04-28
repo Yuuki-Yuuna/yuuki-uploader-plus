@@ -1,5 +1,5 @@
 import { RefObject } from 'react'
-import { createInupt, UploaderOption } from '@yuuki-uploader/core'
+import { createInupt, UploaderOption } from 'yuuki-uploader-core'
 
 export const useInput = (
   option: UploaderOption,
